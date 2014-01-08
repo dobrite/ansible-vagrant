@@ -23,9 +23,11 @@ The vagrant module for ansible requires
    require [VirtualBox](https://www.virtualbox.org/wiki/Downloads).
  * that the [vagrant-python](https://github.com/todddeluca/python-vagrant) is installed and in your python path
 
-To install, couple the file "vagrant" to your ansible isntallation, under the "./library" directory.
+To install, copy (or symlink) the file "vagrant" to your ansible installation, under the "./library" directory.
 
-To run the tests from the repository, cd into "./test" and run
+To run the tests from the repository, cd into "./test" and run. NOTE: you'll
+probably want to disable host key checking and ssh-add vagrant's insecure
+private key
 
     ansible-playbook -v -i hosts vagrant-test.yaml
 
@@ -42,20 +44,20 @@ First create a simple host inventory file for ansible that only includes your lo
 
 The target machine image is called a "box" under vagrant, and can be managed ahead of time using a vagrant command:
 
-    vagrant box add lucid64 http://files.vagrantup.com/lucid64.box
+    vagrant box add precise64 http://files.vagrantup.com/precise64.box
 
 or instead the path can be specified when you start the VM itself. We'll start up a standard VM with ansible-vagrant as follows:
 
-    ansible all -i hosts -c local -m vagrant -a "state=present vm_name=myvm box_name=lucid64 box_path=http://files.vagrantup.com/lucid64.box"
+    ansible all -i hosts -c local -m vagrant -a "state=present vm_name=myvm box_name=precise64 box_path=http://files.vagrantup.com/precise64.box"
 
-This command will download and register the image as "lucid64," then start up the image and attribute
+This command will download and register the image as "precise64," then start up the image and attribute
 the name "myvm" to it. If you had left off the "vm_name" argument, the module will set the vm_name to "ansible" for you.
 
 The command is idempotent, so if the instances are currently running (and you haven't removed any auto-generated state files such as "Vagrantfile.json") then this command will not try to start already running instances.
 
 A more "command" equivalent would be:
 
-    ansible all -i hosts -c local -m vagrant -a "command=up vm_name=myvm box_name=lucid64 box_path=http://files.vagrantup.com/lucid64.box"
+    ansible all -i hosts -c local -m vagrant -a "command=up vm_name=myvm box_name=precise64 box_path=http://files.vagrantup.com/precise64.box"
 
 Note: names in vagrant have to be compatible with the ruby syntax used in Vagrantfiles,
 so they can't use "-" or "_", and must start with a lowercase letter. *In the future, you can leave
@@ -121,8 +123,8 @@ Here's an example playbook:
       gather_facts: False
 
       vars:
-        box_name: lucid32
-        box_path: http://files.vagrantup.com/lucid32.box
+        box_name: precise64
+        box_path: http://files.vagrantup.com/precise64.box
         vm_name: frank
 
       tasks:
@@ -197,9 +199,9 @@ These data structures take into account that there may be multiple named sets of
 
 The up subcommand
 
-    ansible -m vagrant -a "command=up box_name=lucid32 vm_name=fred count=2
+    ansible -m vagrant -a "command=up box_name=precise64 vm_name=fred count=2
 
-asks vagrant to start up two identical instances of the "lucid32" box, and name then "fred." When successful produces output of this type:
+asks vagrant to start up two identical instances of the "precise64" box, and name then "fred." When successful produces output of this type:
 
     {
       "changed": true,
