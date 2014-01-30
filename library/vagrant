@@ -79,13 +79,15 @@ VAGRANT_FILE_VM_STANZA_HEAD = """
     %s_config.vm.box = "%s"
 """
 VAGRANT_FILE_HOSTNAME_LINE     = "    %s_config.vm.host_name = \"%s\"\n"
+VAGRANT_FILE_PRIV_NET_LINE     = "    %s_config.vm.network \"private_network\", ip: \"%s\"\n"
 VAGRANT_FILE_PORT_FORWARD_LINE = "    %s_config.vm.forward_port %s, %s\n"
 VAGRANT_FILE_VM_STANZA_TAIL="  end\n"
 
 VAGRANT_FILE_TAIL = "\nend\n"
 
-# If this is already a network on your machine, this may fail ... change it here.
+# If these are already networks on your machine, this may fail ... change it here.
 VAGRANT_INT_IP = "192.168.179.%s"
+VAGRANT_PRIV_IP = "192.168.50.%s"
 
 DEFAULT_VM_NAME = "ansible"
 
@@ -326,6 +328,7 @@ class VagrantWrapper(object):
         d['name'] = vm_name
         d['vagrant_name'] = "%s%d" % (vm_name.replace("-","_"),n)
         d['internal_ip'] = VAGRANT_INT_IP % (255-N)
+        d['private_ip'] = VAGRANT_PRIV_IP % (255-N)
         d['forward_ports'] = []
         self.vg_data['num_inst'] = N
 
@@ -385,10 +388,12 @@ class VagrantWrapper(object):
             for c in range(len(inst_array)):
                 d = inst_array[c]
                 name = d['vagrant_name']
-                ip = d['internal_ip']
+                int_ip = d['internal_ip']
+                priv_ip = d['private_ip']
                 box_name = d['box_name']
                 vfile.write(VAGRANT_FILE_VM_STANZA_HEAD %
-                            (name, name, name, ip, name, box_name) )
+                            (name, name, name, int_ip, name, box_name) )
+                vfile.write(VAGRANT_FILE_PRIV_NET_LINE % (name, priv_ip))
                 vfile.write(VAGRANT_FILE_HOSTNAME_LINE  % (name, name.replace('_','-'))  )
                 if d.has_key('forward_ports'):
                     for p in d['forward_ports']:
@@ -423,6 +428,7 @@ class VagrantWrapper(object):
                          'id': cnf['Host'],
                          'public_ip': cnf['HostName'],
                          'internal_ip': inst['internal_ip'],
+                         'private_ip': inst['private_ip'],
                          'public_dns_name': cnf['HostName'],
                          'port' : cnf['Port'],
                          'username' : cnf['User'],
