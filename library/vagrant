@@ -71,15 +71,16 @@ VAGRANT_FILE = "./Vagrantfile"
 VAGRANT_DICT_FILE = "./Vagrantfile.json"
 VAGRANT_LOCKFILE = "./.vagrant-lock"
 
-VAGRANT_FILE_HEAD = "Vagrant::Config.run do |config|\n"
+VAGRANT_FILE_HEAD = "Vagrant.configure(\"2\") do |config|\n"
+
 VAGRANT_FILE_BOX_NAME = "  config.vm.box = \"%s\"\n"
 VAGRANT_FILE_VM_STANZA_HEAD = """
   config.vm.define :%s do |%s_config|
-    %s_config.vm.network :hostonly, "%s"
+    %s_config.vm.network :private_network, ip: "%s"
     %s_config.vm.box = "%s"
 """
 VAGRANT_FILE_HOSTNAME_LINE     = "    %s_config.vm.host_name = \"%s\"\n"
-VAGRANT_FILE_PRIV_NET_LINE     = "    %s_config.vm.network \"private_network\", ip: \"%s\"\n"
+VAGRANT_FILE_PRIV_NET_LINE     = "    %s_config.vm.network :private_network, ip: \"%s\"\n"
 VAGRANT_FILE_PORT_FORWARD_LINE = "    %s_config.vm.forward_port %s, %s\n"
 VAGRANT_FILE_VM_STANZA_TAIL="  end\n"
 
